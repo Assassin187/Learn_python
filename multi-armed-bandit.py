@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+ε贪心算法 未实现ε参数的下降优化
+"""
+
 class BernoulliBandit:
 
     """伯努利多臂老虎机 k个老虎机"""
@@ -45,7 +49,7 @@ class solver:
 class EpsilonGreedy(solver):
 
     """初始化 epsilon 和 估计价值"""
-    def __init__(self, bandit, epsilon=0.01, init_prob=1.0):
+    def __init__(self, bandit, epsilon=0.01, init_prob=0.0):
         super(EpsilonGreedy, self).__init__(bandit)
         self.epsilon = epsilon
         self.q = np.array(self.bandit.k * [init_prob])
@@ -58,13 +62,13 @@ class EpsilonGreedy(solver):
             k = np.argmax(self.q)
         r = self.bandit.step(k)
         self.num += r
-        self.q[k] +=  1. / (self.counts[k] + 1) * (r - self.q[k])
+        self.q[k] += (self.q[k]*self.counts[k] + r) / (self.counts[k] + 1) # 价值更新
         return k
-    
+
 np.random.seed(1)
 k = 10
 bandit = BernoulliBandit(k)
-iters = 4000
+iters = 100000
 
 epsilon_greedy_func = EpsilonGreedy(bandit, epsilon=0.01)
 epsilon_greedy_func.run(iters)
